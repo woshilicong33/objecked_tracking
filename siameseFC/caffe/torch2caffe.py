@@ -5,8 +5,7 @@ sys.path.append("..")
 import numpy as np
 import torch
 import torch.nn as nn
-caffe_root = '/home/streamx/workspace/caffe-base/'
-sys.path.insert(0, caffe_root + 'python')  
+
 import caffe  
 protofile = "./AlexNetV1.prototxt"
 modelFile = "./AlexNetV1.caffemodel"

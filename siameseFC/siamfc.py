@@ -32,10 +32,11 @@ class Net(nn.Module):
         self.backbone = backbone
         self.head = head
     
-    def forward(self, z, x):
+    def forward(self, z,x):
         z = self.backbone(z)
         x = self.backbone(x)
         return self.head(z, x)
+        # return z
 
 
 class TrackerSiamFC(Tracker):
