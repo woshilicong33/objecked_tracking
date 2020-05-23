@@ -7,9 +7,9 @@ import torch
 import torch.nn as nn
 
 import caffe  
-protofile = "./AlexNetV1.prototxt"
-modelFile = "./AlexNetV1.caffemodel"
-modelPath = "../pretrained/siamfc_alexnet_e1.pth"
+protofile = "./AlexNetV1_127.prototxt"
+modelFile = "./AlexNetV1_127.caffemodel"
+modelPath = "../pretrained/siamfc_alexnet_e100.pth"
 net = caffe.Net(protofile, caffe.TEST)
 caffeParams = net.params
 for k in sorted(caffeParams):

@@ -154,22 +154,20 @@ class TrackerSiamFC(Tracker):
     
     @torch.no_grad()
     def update(self, img):
-        # # set to evaluation mode
-        # self.net.eval()
+        # set to evaluation mode
+        self.net.eval()
 
-        # # search images
-        # x = [ops.crop_and_resize(
-        #     img, self.center, self.x_sz * f,
-        #     out_size=self.cfg.instance_sz,
-        #     border_value=self.avg_color) for f in self.scale_factors]
-        # x = np.stack(x, axis=0)
-        # x = torch.from_numpy(x).to(
-        #     self.device).permute(0, 3, 1, 2).float()
-        print("here")
+        # search images
+        x = [ops.crop_and_resize(
+            img, self.center, self.x_sz * f,
+            out_size=self.cfg.instance_sz,
+            border_value=self.avg_color) for f in self.scale_factors]
+        x = np.stack(x, axis=0)
+        x = torch.from_numpy(x).to(
+            self.device).permute(0, 3, 1, 2).float()
+
         # responses
         x = self.net.backbone(x)
-        print(x)
-        exit()
         responses = self.net.head(self.kernel, x)
         responses = responses.squeeze(1).cpu().numpy()
 
@@ -179,17 +177,9 @@ class TrackerSiamFC(Tracker):
             interpolation=cv2.INTER_CUBIC)
             for u in responses])
 
-
         # exit()
         responses[:self.cfg.scale_num // 2] *= self.cfg.scale_penalty
         responses[self.cfg.scale_num // 2 + 1:] *= self.cfg.scale_penalty
-
-        # print(np.shape(responses)[0])top
-        # cv2.imshow("0",responses[0]*255)
-        # cv2.imshow("1",responses[1]*255)
-        # cv2.imshow("2",responses[2]*255)
-        # cv2.waitKey(4)
-
 
         # peak scale
         scale_id = np.argmax(np.amax(responses, axis=(1, 2)))
@@ -198,13 +188,8 @@ class TrackerSiamFC(Tracker):
         response = responses[scale_id]
         response -= response.min()
         response /= response.sum() + 1e-16
-        # print(response)
-        # exit()
-        # cv2.imshow("rerere",response*255)
-        # cv2.waitKey(4)
+
         response = (1 - self.cfg.window_influence) * response + self.cfg.window_influence * self.hann_window
-        # response -= response.min()
-        # response /= response.sum() + 1e-16
 
         e_r = np.exp(responses)
         pro = round(e_r.max()*10000/e_r.sum(),3)
